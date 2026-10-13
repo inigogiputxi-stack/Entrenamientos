@@ -82,6 +82,8 @@ const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const cp=()=>S.players.filter(p=>p.season===SEASON).sort((a,b)=>(+a.num||999)-(+b.num||999));
 const plOf=s=>S.players.filter(p=>p.season===(s.season||SEASON)).sort((a,b)=>(+a.num||999)-(+b.num||999));
 const hasData=s=>Object.keys(s.f).some(k=>k!=='fecha'&&k!=='cat'&&s.f[k])||s.ex.some(Boolean);
+let ctMes='all';
+const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 let view='home',attDate=today(),cur=null,pick=null;
 const C1=['Calentamiento','Parte principal analítica','Parte principal global','Parte secundaria / Fútbol','Descalentamiento / Parte final'];
 const C2=['Calentamiento/Físico/Fuerza','Parte principal analítica','Parte principal global','Parte secundaria / Fútbol','Descalentamiento / Parte final'];
@@ -94,7 +96,7 @@ function render(){
  const a=$('#app');
  if(view==='home'){a.innerHTML=`<h1>Entrenamientos de Fútbol ${SEASON}</h1><div class="home">
  <button data-act="go" data-v="pl">1 · Plantilla</button><button data-act="go" data-v="as">2 · Asistencia jugadores</button>
- <button data-act="go" data-v="ba">3 · Batería ejercicios</button><button data-act="go" data-v="en">4 · Entrenamiento</button><button data-act="go" data-v="hi">5 · Historial de entrenamientos</button></div><div class="bar" style="justify-content:center;margin-top:28px"><button class="btn s" data-act="bkx">Exportar copia de seguridad</button><label class="btn s" style="cursor:pointer">Importar copia<input type="file" id="imp" accept=".json,application/json" hidden></label></div>`;return}
+ <button data-act="go" data-v="ba">3 · Batería ejercicios</button><button data-act="go" data-v="en">4 · Entrenamiento</button><button data-act="go" data-v="hi">5 · Historial de entrenamientos</button><button data-act="go" data-v="ct">6 · Control de asistencia</button></div><div class="bar" style="justify-content:center;margin-top:28px"><button class="btn s" data-act="bkx">Exportar copia de seguridad</button><label class="btn s" style="cursor:pointer">Importar copia<input type="file" id="imp" accept=".json,application/json" hidden></label></div>`;return}
  const back=`<div class="bar"><button class="btn s" data-act="go" data-v="home">← Inicio</button><b>Entrenamientos de Fútbol ${SEASON}</b></div>`;
  if(view==='pl'){
   a.innerHTML=back+`<h2>Plantilla</h2><div class="bar"><button class="btn" data-act="addp">+ Añadir jugador</button></div><div class="wrap"><table><tr><th>Temporada</th><th>Dorsal</th><th>Nombre</th><th>Posición</th><th>Fecha de nacimiento</th><th>Altura (cm)</th><th>Peso (kg)</th><th></th></tr>`+
@@ -108,6 +110,17 @@ function render(){
  if(view==='ba'){
   a.innerHTML=back+`<h2>Batería de ejercicios</h2><div class="bar"><button class="btn" data-act="adde">+ Nuevo ejercicio</button></div><div class="bat">`+
   S.ex.map(e=>`<div class="card"><b>${e.id}</b><label class="im">${e.img?`<img src="${e.img}">`:'Pulsa para subir imagen'}<input type="file" accept="image/*" data-img="${e.id}" hidden></label><textarea data-e="${e.id}" placeholder="Descripción del ejercicio">${esc(e.desc)}</textarea><button class="btn d" data-act="dele" data-id="${e.id}">Eliminar</button></div>`).join('')+`</div>`;
+ }
+ if(view==='ct'){
+  const y=2000+parseInt(SEASON.slice(0,2)),y0=y+'-06-01',y1=(y+1)+'-05-31';
+  const ds=Object.keys(S.att).filter(d=>d>=y0&&d<=y1&&Object.values(S.att[d]).some(v=>v)).sort();
+  const ms=[...new Set(ds.map(d=>d.slice(0,7)))];
+  if(ctMes!=='all'&&!ms.includes(ctMes))ctMes='all';
+  const use=ds.filter(d=>ctMes==='all'||d.startsWith(ctMes)),D=use.length;
+  const rows=cp().map(p=>{let A=0,P=0,N=0;use.forEach(d=>{const v=(S.att[d]||{})[p.id];if(v==='Asiste')A++;else if(v==='Permiso')P++;else if(v==='S/N')N++});return{p,A,P,N,X:D-A-P-N}});
+  const pc=(n)=>D?Math.round(100*n/D)+'%':'-';
+  a.innerHTML=back+`<h2>Control de asistencia ${SEASON}</h2><div class="bar">Periodo: <select id="ctm"><option value="all">Toda la temporada</option>${ms.map(m=>`<option value="${m}" ${m===ctMes?'selected':''}>${MESES[+m.slice(5)-1]} ${m.slice(0,4)}</option>`).join('')}</select><b>Entrenamientos con asistencia registrada: ${D}</b></div>`+
+  (D?`<div class="wrap"><table><tr><th>Dorsal</th><th>Nombre</th><th>Asiste</th><th>Permiso</th><th>S/N</th><th>Sin marcar</th><th>% asistencia</th></tr>`+rows.map(r=>`<tr><td style="padding:6px">${esc(r.p.num)}</td><td style="padding:6px">${esc(r.p.name)}</td><td style="padding:6px;text-align:center">${r.A}</td><td style="padding:6px;text-align:center">${r.P}</td><td style="padding:6px;text-align:center">${r.N}</td><td style="padding:6px;text-align:center">${r.X}</td><td style="padding:6px;text-align:center"><b>${pc(r.A)}</b></td></tr>`).join('')+`</table></div><p style="font-size:13px;opacity:.75">% asistencia = veces que Asiste / entrenamientos con asistencia registrada en el periodo. "Sin marcar" = días con registro en los que no se anotó nada de ese jugador.</p>`:'<p>Todavía no hay asistencia registrada en este periodo. Anótala en "2 · Asistencia jugadores".</p>');
  }
  if(view==='hi'){
   const L=S.sessions.filter(hasData).sort((a,b)=>(b.f.fecha||'').localeCompare(a.f.fecha||'')||b.id.localeCompare(a.id));
@@ -163,6 +176,7 @@ document.addEventListener('change',e=>{
  const t=e.target,d=t.dataset;
  if(d.a){(S.att[attDate]=S.att[attDate]||{})[d.a]=t.value;save()}
  else if(t.id==='imp'&&t.files[0]){importBk(t.files[0]);t.value=''}
+ else if(t.id==='ctm'){ctMes=t.value;render()}
  else if(t.id==='attd'){attDate=t.value||today();render()}
  else if(t.id==='ss'){cur=t.value;render()}
  else if(d.img&&t.files[0]){
