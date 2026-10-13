@@ -1,0 +1,4 @@
+Entrenamientos de Futbol - version PWA
+Sube TODOS estos archivos a una web con HTTPS (por ejemplo GitHub Pages), en la misma carpeta.
+Despues abre la URL en Safari (iPhone/iPad) > Compartir > Anadir a pantalla de inicio.
+Para actualizar la app: sustituye index.html y cambia el numero de version en sw.js (const V).
