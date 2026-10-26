@@ -2,6 +2,12 @@
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Entrenamientos de Fútbol</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#111f3a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Entrenamientos">
 <style>
 :root{--bg:#f5f5f4;--fg:#1c1917;--card:#fff;--bd:#d6d3d1;--ac:#2f5fb3;--red:#c9352f;--blk:#222;--g:#f1f1f1}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1917;--fg:#f5f5f4;--card:#292524;--bd:#44403c;--g:#33302e}}
@@ -97,7 +103,7 @@ function newSess(){const s={id:uid(),season:SEASON,f:{fecha:today(),cat:SEASON},
 
 function render(){
  const a=$('#app');
- if(view==='home'){a.innerHTML=`<h1>Entrenamientos de Fútbol ${SEASON}</h1><div class="home">
+ if(view==='home'){a.innerHTML=`<h1>Entrenamientos de Fútbol ${SEASON}</h1><p style="text-align:center;opacity:.6;font-size:12px;margin:-14px 0 18px">Versión 26/10/2026 · con calendario, resultados y clasificación</p><div class="home">
  <button data-act="go" data-v="pl">1 · Plantilla</button><button data-act="go" data-v="as">2 · Asistencia jugadores</button>
  <button data-act="go" data-v="ba">3 · Batería ejercicios</button><button data-act="go" data-v="en">4 · Entrenamiento</button><button data-act="go" data-v="hi">5 · Historial de entrenamientos</button><button data-act="go" data-v="ct">6 · Control de asistencia</button><button data-act="go" data-v="ca">7 · Calendario</button><button data-act="go" data-v="re">8 · Resultados por jornada</button><button data-act="go" data-v="cl">9 · Clasificación</button></div><div class="bar" style="justify-content:center;margin-top:28px"><button class="btn s" data-act="bkx">Exportar copia de seguridad</button><label class="btn s" style="cursor:pointer">Importar copia<input type="file" id="imp" accept=".json,application/json" hidden></label></div>`;return}
  const back=`<div class="bar"><button class="btn s" data-act="go" data-v="home">← Inicio</button><b>Entrenamientos de Fútbol ${SEASON}</b></div>`;
@@ -240,10 +246,6 @@ async function exportImg(id){const s=S.sessions.find(x=>x.id===id);if(!s)return;
 async function exportBk(){
  const json=JSON.stringify(S),name='copia_entrenamientos_'+today()+'.json';
  try{
-  const C=window.Capacitor;
-  if(C&&C.isNativePlatform&&C.isNativePlatform()&&C.Plugins&&C.Plugins.Filesystem&&C.Plugins.Share){
-   const r=await C.Plugins.Filesystem.writeFile({path:name,data:btoa(unescape(encodeURIComponent(json))),directory:'CACHE'});
-   await C.Plugins.Share.share({title:name,files:[r.uri]});return}
   const file=new File([json],name,{type:'application/json'});
   if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});return}
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([json],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();a.remove();
@@ -259,6 +261,7 @@ function importBk(file){
  }catch(e){alert('El archivo no es una copia válida.')}};
  r.readAsText(file);
 }
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 // ===== COMPETICIÓN: calendario, resultados, clasificación =====
 const COs=()=>S.comps||(S.comps={});
