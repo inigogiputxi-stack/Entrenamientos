@@ -38,12 +38,12 @@ td input,td select{width:100%;border:0;background:transparent;padding:6px;min-wi
 .im img{width:100%;height:100%;object-fit:contain}
 textarea{width:100%;min-height:90px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);padding:6px;resize:vertical}
 .sh{display:grid;grid-template-columns:470px 1fr;gap:8px;min-width:1250px}
-.lg{display:grid;grid-template-columns:120px 1fr;gap:2px;margin-bottom:2px}.lg img{width:120px;height:100%;object-fit:contain;background:#12204a}
+.lg{display:grid;grid-template-columns:120px 1fr;gap:2px;margin-bottom:2px}.lgi{position:relative;background:#12204a;min-height:64px}.lgi img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .g6,.g5,.g7{display:grid;gap:2px;margin-bottom:2px}
 .g6{grid-template-columns:120px repeat(5,1fr)}.g5{grid-template-columns:repeat(5,1fr)}.g7{grid-template-columns:repeat(7,1fr)}
 .k{background:var(--blk);color:#fff;font-size:11px;font-weight:700;text-align:center;padding:5px}
 .r{background:#c9352f;color:#fff;font-size:12px;font-weight:700;text-align:center;padding:8px 4px}
-.r2{background:#d0605a}
+.r2{background:#d0605a}.r2i{width:100%;background:#d0605a;color:#fff;font:700 12px Arial,sans-serif;text-align:center;border:0;border-radius:0;padding:8px 4px}.r2i:focus{outline:2px solid #fff;outline-offset:-3px}
 .lb{font-size:12px;text-align:center;display:flex;align-items:center;justify-content:center;padding:4px;color:#222}
 .y{background:#ffd966}.gr{background:#d9ead3}.pk{background:#f4cccc}.og{background:#fce5cd}
 .cell{width:100%;min-height:58px;border:0;border-radius:0;resize:none;background:var(--g);color:var(--fg)}
@@ -103,9 +103,9 @@ function newSess(){const s={id:uid(),season:SEASON,f:{fecha:today(),cat:SEASON},
 
 function render(){
  const a=$('#app');
- if(view==='home'){a.innerHTML=`<h1>Entrenamientos de Fútbol ${SEASON}</h1><p style="text-align:center;opacity:.6;font-size:12px;margin:-14px 0 18px">Versión 26/10/2026 · con calendario, resultados y clasificación</p><div class="home">
+ if(view==='home'){a.innerHTML=`<h1>Entrenamientos de Fútbol ${SEASON}</h1><p style="text-align:center;opacity:.6;font-size:12px;margin:-14px 0 18px">Versión 02/11/2026 · tipos de ejercicio, cabecera editable y copia corregida</p><div class="home">
  <button data-act="go" data-v="pl">1 · Plantilla</button><button data-act="go" data-v="as">2 · Asistencia jugadores</button>
- <button data-act="go" data-v="ba">3 · Batería ejercicios</button><button data-act="go" data-v="en">4 · Entrenamiento</button><button data-act="go" data-v="hi">5 · Historial de entrenamientos</button><button data-act="go" data-v="ct">6 · Control de asistencia</button><button data-act="go" data-v="ca">7 · Calendario</button><button data-act="go" data-v="re">8 · Resultados por jornada</button><button data-act="go" data-v="cl">9 · Clasificación</button></div><div class="bar" style="justify-content:center;margin-top:28px"><button class="btn s" data-act="bkx">Exportar copia de seguridad</button><label class="btn s" style="cursor:pointer">Importar copia<input type="file" id="imp" accept=".json,application/json" hidden></label></div>`;return}
+ <button data-act="go" data-v="ba">3 · Batería ejercicios</button><button data-act="go" data-v="en">4 · Entrenamiento</button><button data-act="go" data-v="hi">5 · Historial de entrenamientos</button><button data-act="go" data-v="ct">6 · Control de asistencia</button><button data-act="go" data-v="ca">7 · Calendario</button><button data-act="go" data-v="re">8 · Resultados por jornada</button><button data-act="go" data-v="cl">9 · Clasificación</button></div><div class="bar" style="justify-content:center;margin-top:28px"><button class="btn s" data-act="bkx">Exportar copia de seguridad</button><label class="btn s" style="cursor:pointer">Importar copia<input type="file" id="imp" accept=".json,.txt,application/json,text/plain" hidden></label></div>`;return}
  const back=`<div class="bar"><button class="btn s" data-act="go" data-v="home">← Inicio</button><b>Entrenamientos de Fútbol ${SEASON}</b></div>`;
  if(compRender(a,back))return;
  if(view==='pl'){
@@ -118,8 +118,7 @@ function render(){
   cp().map(p=>`<tr><td style="padding:6px">${esc(p.num)}</td><td style="padding:6px">${esc(p.name)}</td><td><select data-a="${p.id}">`+['','Asiste','Permiso','S/N'].map(o=>`<option ${d[p.id]===o?'selected':''}>${o}</option>`).join('')+`</select></td></tr>`).join('')+`</table></div>`;
  }
  if(view==='ba'){
-  a.innerHTML=back+`<h2>Batería de ejercicios</h2><div class="bar"><button class="btn" data-act="adde">+ Nuevo ejercicio</button></div><div class="bat">`+
-  S.ex.map(e=>`<div class="card"><b>${e.id}</b><label class="im">${e.img?`<img src="${e.img}">`:'Pulsa para subir imagen'}<input type="file" accept="image/*" data-img="${e.id}" hidden></label><textarea data-e="${e.id}" placeholder="Descripción del ejercicio">${esc(e.desc)}</textarea><button class="btn d" data-act="dele" data-id="${e.id}">Eliminar</button></div>`).join('')+`</div>`;
+  a.innerHTML=back+`<h2>Batería de ejercicios</h2><div class="bar"><select id="tf" class="ci">${tfOpts(tf)}</select><button class="btn" data-act="adde">+ Nuevo ejercicio</button></div><div class="bat" id="bl">${batl()}</div>`;
  }
  if(view==='ct'){
   const y=2000+parseInt(SEASON.slice(0,2)),y0=y+'-06-01',y1=(y+1)+'-05-31';
@@ -145,10 +144,10 @@ function render(){
   for(let i=0;i<24;i++){const p=pl[i];L+=`<tr><td class="f">${p?esc(p.num):''}</td><td class="f">${p?esc(p.pos):''}</td><td class="f" style="text-align:left">${p?esc(p.name):''}</td>`+[1,2,3,4,5].map(n=>`<td>${p?`<input data-k="t_${p.id}_${n}" value="${esc(f['t_'+p.id+'_'+n])}">`:''}</td>`).join('')+`</tr>`}
   L+=`</table>`;
   const H=[['fecha','Fecha','date'],['ses','Sesión Nº','text'],['sem','Semana Nº','text'],['mac','Macrociclo','text'],['tipo','Tipo de día','text'],['jug','Jugadores','text'],['cat','Categoría/Temporada','text']];
-  let R=`<div class="lg"><img src="${LOGO}" alt="Logo"><div><div class="g7">${H.map(h=>`<div class="k">${h[1]}</div>`).join('')}${H.map(h=>I(h[0],h[2])).join('')}</div><div class="g5">${C1.map(c=>`<div class="r">${c}</div>`).join('')}</div></div></div>`;
+  let R=`<div class="lg"><div class="lgi"><img src="${LOGO}" alt="Logo"></div><div><div class="g7">${H.map(h=>`<div class="k">${h[1]}</div>`).join('')}${H.map(h=>I(h[0],h[2])).join('')}</div><div class="g5">${C1.map(c=>`<div class="r">${c}</div>`).join('')}</div></div></div>`;
   
   ROWS.forEach(([l,c,bg])=>{R+=`<div class="g6"><div class="lb ${bg}">${l}</div>`+C1.map((_,j)=>`<textarea class="cell ${c}" data-k="${c}${j}">${esc(f[c+j])}</textarea>`).join('')+`</div>`});
-  R+=`<div class="g5" style="margin-top:6px">${C2.map(c=>`<div class="k">${c}</div>`).join('')}</div><div class="g5">${C3.map(c=>`<div class="r r2">${c}</div>`).join('')}</div><div class="g5">`;
+  R+=`<div class="g5" style="margin-top:6px">${C2.map(c=>`<div class="k">${c}</div>`).join('')}</div><div class="g5">${C3.map((c,j)=>`<input class="r2i" data-k="h3_${j}" value="${esc(f['h3_'+j]===undefined?c:f['h3_'+j])}">`).join('')}</div><div class="g5">`;
   for(let j=0;j<5;j++){
    const e=S.ex.find(x=>x.id===s.ex[j]);
    R+=`<div><div class="desc">${e?esc(e.desc):''}</div><div class="jet"><div>Jugadores</div><div>Espacio</div><div>Tiempo</div>${['j','e','t'].map(c=>`<input data-k="${c}${j}" value="${esc(f[c+j])}">`).join('')}</div>`+
@@ -157,14 +156,14 @@ function render(){
   a.innerHTML=back+`<div class="bar"><select id="ss">${S.sessions.map(x=>`<option value="${x.id}" ${x.id===cur?'selected':''}>${esc(x.f.fecha||'s/f')} · Ses. ${esc(x.f.ses||'?')}</option>`).join('')}</select><button class="btn" data-act="news">+ Nuevo entrenamiento</button><button class="btn s" data-act="img" data-id="${cur}">Guardar como imagen</button><button class="btn d" data-act="dels">Eliminar este</button></div><div class="wrap"><div class="sh"><div>${L}</div><div>${R}</div></div></div>`;
  }
 }
-function openPick(j){pick=j;$('#mbox').innerHTML=`<div class="bar"><b>Elegir ejercicio</b><button class="btn s" data-act="close">Cerrar</button></div>`+(S.ex.length?`<div class="pk2">${S.ex.map(e=>`<div data-act="chosen" data-id="${e.id}"><b>${e.id}</b>${e.img?`<img src="${e.img}">`:''}<small>${esc((e.desc||'').slice(0,60))}</small></div>`).join('')}</div>`:'<p>No hay ejercicios. Créalos en "Batería ejercicios".</p>');$('#modal').style.display='flex'}
+function openPick(j){pick=j;ptf='';$('#mbox').innerHTML=`<div class="bar"><b>Elegir ejercicio</b><select id="ptf" class="ci">${tfOpts('')}</select><button class="btn s" data-act="close">Cerrar</button></div><div id="pkl">${S.ex.length?pkList():'<p>No hay ejercicios. Créalos en "Batería ejercicios".</p>'}</div>`;$('#modal').style.display='flex'}
 const closeM=()=>{$('#modal').style.display='none'};
 document.addEventListener('click',e=>{
  const t=e.target.closest('[data-act]');if(!t)return;const a=t.dataset.act,d=t.dataset;
  if(a==='go'){view=d.v;render()}
  else if(a==='addp'){S.players.push({id:uid(),season:SEASON,num:'',name:'',pos:'',dob:'',h:'',w:''});save();render()}
  else if(a==='delp'){if(confirm('¿Eliminar jugador?')){S.players=S.players.filter(p=>p.id!==d.id);save();render()}}
- else if(a==='adde'){S.n++;S.ex.push({id:'E'+String(S.n).padStart(3,'0'),img:'',desc:''});save();render()}
+ else if(a==='adde'){S.n++;S.ex.push({id:'E'+String(S.n).padStart(3,'0'),img:'',desc:'',tipo:(tf&&tf!=='_none')?tf:''});save();render()}
  else if(a==='dele'){if(confirm('¿Eliminar ejercicio?')){S.ex=S.ex.filter(x=>x.id!==d.id);save();render()}}
  else if(a==='news'){newSess();render()}
  else if(a==='dels'){if(confirm('¿Eliminar este entrenamiento?')){S.sessions=S.sessions.filter(x=>x.id!==cur);cur=null;save();render()}}
@@ -173,6 +172,7 @@ document.addEventListener('click',e=>{
  else if(a==='chosen'){sess().ex[pick]=d.id;save();closeM();render()}
  else if(a==='close')closeM();
  else if(a==='bkx')exportBk();
+ else if(a==='bkc'){const el=$('#bkt');navigator.clipboard.writeText(el.value).then(()=>bkMsg('Copiado'),()=>{el.select();document.execCommand('copy')})}
  else if(a==='open'){cur=d.id;view='en';render()}
  else if(a==='img')exportImg(d.id);
 });
@@ -221,7 +221,7 @@ async function drawSession(s){
  // bloques
  for(let j=0;j<5;j++){const x=540+j*248,e=S.ex.find(q=>q.id===s.ex[j]);
   R(x,412,246,24,'#222');T(C2[j],x+123,418,'#fff','bold 11px Arial','center');
-  R(x,438,246,26,'#d0605a');T(C3[j],x+123,445,'#fff','bold 12px Arial','center');
+  R(x,438,246,26,'#d0605a');T(f['h3_'+j]===undefined?C3[j]:f['h3_'+j],x+123,445,'#fff','bold 12px Arial','center');
   R(x,466,246,150,'#f1f1f1');if(e)WR(e.desc,x+6,472,234,15,9,'#222','12px Arial');
   ['Jugadores','Espacio','Tiempo'].forEach((l,q)=>{const xx=x+q*82;R(xx,620,81,18,'#ffe599');T(l,xx+40,624,'#222','11px Arial','center');R(xx,639,81,24,'#f1f1f1');T(f[['j','e','t'][q]+j],xx+40,645,'#222','13px Arial','center')});
   R(x,666,246,262,'#fff');B(x,666,246,262);
@@ -243,14 +243,27 @@ async function saveCanvas(cv,name){
 }
 async function exportImg(id){const s=S.sessions.find(x=>x.id===id);if(!s)return;const f=s.f;await saveCanvas(await drawSession(s),'entrenamiento_'+(f.fecha||'sf')+'_ses'+(f.ses||'')+'.png')}
 
+const TIPOS=['Calentamiento','Parte principal','Parte secundaria','Parte final'];
+let tf='',ptf='';
+const ft=(e,f)=>!f||(f==='_none'?!e.tipo:e.tipo===f);
+const tfOpts=s=>`<option value="">Todos los tipos</option>${TIPOS.map(t=>`<option ${s===t?'selected':''}>${t}</option>`).join('')}<option value="_none" ${s==='_none'?'selected':''}>Sin tipo</option>`;
+const bcard=e=>`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>${e.id}</b><select class="ci" data-et="${e.id}"><option value="">Sin tipo</option>${TIPOS.map(t=>`<option ${e.tipo===t?'selected':''}>${t}</option>`).join('')}</select></div><label class="im">${e.img?`<img src="${e.img}">`:'Pulsa para subir imagen'}<input type="file" accept="image/*" data-img="${e.id}" hidden></label><textarea data-e="${e.id}" placeholder="Descripción del ejercicio">${esc(e.desc)}</textarea><button class="btn d" data-act="dele" data-id="${e.id}">Eliminar</button></div>`;
+const batl=()=>S.ex.filter(e=>ft(e,tf)).map(bcard).join('')||'<p>No hay ejercicios de este tipo.</p>';
+const pkList=()=>{const L=S.ex.filter(e=>ft(e,ptf));return L.length?`<div class="pk2">${L.map(e=>`<div data-act="chosen" data-id="${e.id}"><b>${e.id}</b>${e.tipo?`<br><small>${esc(e.tipo)}</small>`:''}${e.img?`<img src="${e.img}">`:''}<small>${esc((e.desc||'').slice(0,60))}</small></div>`).join('')}</div>`:'<p>No hay ejercicios de este tipo.</p>'};
+document.addEventListener('change',e=>{const t=e.target;
+ if(t.id==='tf'){tf=t.value;$('#bl').innerHTML=batl()}
+ else if(t.id==='ptf'){ptf=t.value;$('#pkl').innerHTML=pkList()}
+ else if(t.dataset.et){const x=S.ex.find(q=>q.id===t.dataset.et);if(x){x.tipo=t.value;save();if(tf)$('#bl').innerHTML=batl()}}});
 async function exportBk(){
- const json=JSON.stringify(S),name='copia_entrenamientos_'+today()+'.json';
+ const json=JSON.stringify(S),base='copia_entrenamientos_'+today();let err='';
  try{
-  const file=new File([json],name,{type:'application/json'});
-  if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});return}
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([json],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();a.remove();
- }catch(e){if(!(e&&e.name==='AbortError'))alert('No se pudo exportar la copia.')}
-}
+  const f=new File([json],base+'.txt',{type:'text/plain'});
+  if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:base});return}}
+ catch(e){if(e&&e.name==='AbortError')return;err=(e&&(e.name+': '+e.message))||'error al compartir'}
+ try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([json],{type:'application/json'}));a.download=base+'.json';document.body.appendChild(a);a.click();a.remove();bkMsg('Descarga iniciada: '+base+'.json');return}
+ catch(e){err+=' | '+((e&&(e.name+': '+e.message))||'error al descargar')}
+ $('#mbox').innerHTML=`<div class="bar"><b>Copia de seguridad</b><button class="btn s" data-act="close">Cerrar</button></div><p>No se pudo guardar el archivo automáticamente${err?' ('+esc(err)+')':''}. Copia este texto, guárdalo en una nota o en un archivo .txt y luego podrás cargarlo con "Importar copia".</p><textarea id="bkt" readonly style="width:100%;height:180px">${esc(json)}</textarea><div class="bar" style="margin-top:10px"><button class="btn" data-act="bkc">Copiar texto</button></div>`;$('#modal').style.display='flex'}
+function bkMsg(t){const d=document.createElement('div');d.textContent=t;d.style.cssText='position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#111f3a;color:#fff;padding:10px 18px;border-radius:20px;z-index:99';document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}
 function importBk(file){
  const r=new FileReader();
  r.onload=()=>{try{

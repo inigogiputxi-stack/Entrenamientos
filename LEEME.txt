@@ -1,2 +1,2 @@
 Sube TODOS estos archivos a la RAIZ del repositorio de GitHub Pages (no dentro de una carpeta), reemplazando los anteriores.
-La portada muestra "Version 26/10/2026": si no la ves, el iPhone esta mostrando una copia antigua.
+La portada muestra "Version 02/11/2026": si no la ves, el iPhone esta mostrando una copia antigua.
