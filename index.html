@@ -83,6 +83,26 @@ textarea{width:100%;min-height:90px;border:1px solid var(--bd);border-radius:6px
 #ed,#ed *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}#ed{overscroll-behavior:contain}
 .edp{display:flex;gap:6px;overflow-x:auto;padding:8px;background:#1c2429;-webkit-overflow-scrolling:touch}
 .edp button{flex:0 0 auto;width:58px;height:58px;border:2px solid #33414a;border-radius:10px;background:#25303a;padding:3px;cursor:pointer}.edp button.on{border-color:#4fc3f7;background:#2d4150}
+/* cuadro de partidos */
+.cu{background:#2b2b2e;border-radius:12px;padding:8px;overflow:auto;max-height:78vh}
+.cu table{border-collapse:separate;border-spacing:2px;width:auto;background:transparent;font-size:11px}
+.cu th,.cu td{padding:0;border:0}
+.cu thead th{position:sticky;z-index:4}
+.cu .bd{top:0;height:24px;font-size:12px;font-weight:800;color:#fff;text-align:center;border-radius:8px 8px 0 0;white-space:nowrap;padding:0 8px}
+.cu .dh{top:26px;height:170px;vertical-align:middle}
+.cu .dh div{-webkit-writing-mode:vertical-rl;writing-mode:vertical-rl;transform:rotate(180deg);margin:0 auto;height:160px;font-size:11px;font-weight:700;color:#fff;white-space:nowrap}
+.cu .b0{background:#f58220}.cu .b1{background:#3fb7b0}
+.cu .cn{top:0;left:0;z-index:6;background:#fff;color:#2b2b2e;font-weight:800;font-size:12px;border-radius:10px 0 0 0;text-align:center}
+.cu .gb{position:sticky;left:0;z-index:3;width:30px;color:#fff;border-radius:8px 0 0 8px;font-size:11px;font-weight:800;letter-spacing:2px}
+.cu .gb div{-webkit-writing-mode:vertical-rl;writing-mode:vertical-rl;transform:rotate(180deg);margin:0 auto;white-space:nowrap}
+.cu .tn{position:sticky;left:32px;z-index:2;min-width:118px;max-width:118px;background:#e9edf0;color:#1f2a30;font-size:12px;text-align:left;padding:0 8px;border-radius:0 8px 8px 0}
+.cu .cc{min-width:84px;width:84px;height:64px;background:#48484d;border-radius:6px;vertical-align:top}
+.ct{display:block;height:100%;min-height:66px;border-radius:6px;padding:4px 5px 4px 6px;color:#fff;border-left:5px solid transparent;cursor:pointer;box-sizing:border-box}
+.ct+.ct{margin-top:2px}.ct.w{border-left-color:#2ecc71}.ct.d{border-left-color:#ffd54a}.ct.l{border-left-color:#ff5252}
+.ct .t1{display:flex;justify-content:space-between;align-items:center;font-size:9px;opacity:.92;min-height:13px}
+.ct .op{font-size:11px;font-weight:700;line-height:1.15;max-height:26px;overflow:hidden;margin:2px 0}
+.ct .rs{font-size:14px;font-weight:800;text-align:right}
+.cul{font-size:12px;opacity:.8}.cul svg{vertical-align:-2px}
 </style></head><body>
 <div id="app"></div>
 <div id="modal"><div class="box" id="mbox"></div></div>
@@ -114,11 +134,11 @@ function newSess(){const s={id:uid(),season:SEASON,f:{fecha:today(),cat:SEASON},
 
 function render(){
  const a=$('#app');
- if(view==='home'){a.innerHTML=`<h1>Entrenamientos de Fútbol ${SEASON}</h1><p style="text-align:center;opacity:.6;font-size:12px;margin:-14px 0 18px">Versión 04/11/2026 · editor de ejercicios y vídeo en la batería</p><div class="home">
+ if(view==='home'){a.innerHTML=`<h1>Entrenamientos de Fútbol ${SEASON}</h1><p style="text-align:center;opacity:.6;font-size:12px;margin:-14px 0 18px">Versión 09/11/2026 · cuadro de partidos</p><div class="home">
  <button data-act="go" data-v="pl">1 · Plantilla</button><button data-act="go" data-v="as">2 · Asistencia jugadores</button>
- <button data-act="go" data-v="ba">3 · Batería ejercicios</button><button data-act="go" data-v="en">4 · Entrenamiento</button><button data-act="go" data-v="hi">5 · Historial de entrenamientos</button><button data-act="go" data-v="ct">6 · Control de asistencia</button><button data-act="go" data-v="ca">7 · Calendario</button><button data-act="go" data-v="re">8 · Resultados por jornada</button><button data-act="go" data-v="cl">9 · Clasificación</button></div><div class="bar" style="justify-content:center;margin-top:28px"><button class="btn s" data-act="bkx">Exportar copia de seguridad</button><label class="btn s" style="cursor:pointer">Importar copia<input type="file" id="imp" accept=".json,.txt,application/json,text/plain" hidden></label></div>`;return}
+ <button data-act="go" data-v="ba">3 · Batería ejercicios</button><button data-act="go" data-v="en">4 · Entrenamiento</button><button data-act="go" data-v="hi">5 · Historial de entrenamientos</button><button data-act="go" data-v="ct">6 · Control de asistencia</button><button data-act="go" data-v="ca">7 · Calendario</button><button data-act="go" data-v="re">8 · Resultados por jornada</button><button data-act="go" data-v="cl">9 · Clasificación</button><button data-act="go" data-v="cu">10 · Cuadro de partidos</button></div><div class="bar" style="justify-content:center;margin-top:28px"><button class="btn s" data-act="bkx">Exportar copia de seguridad</button><label class="btn s" style="cursor:pointer">Importar copia<input type="file" id="imp" accept=".json,.txt,application/json,text/plain" hidden></label></div>`;return}
  const back=`<div class="bar"><button class="btn s" data-act="go" data-v="home">← Inicio</button><b>Entrenamientos de Fútbol ${SEASON}</b></div>`;
- if(compRender(a,back))return;
+ if(compRender(a,back)||cuRender(a,back))return;
  if(view==='pl'){
   a.innerHTML=back+`<h2>Plantilla</h2><div class="bar"><button class="btn" data-act="addp">+ Añadir jugador</button></div><div class="wrap"><table><tr><th>Temporada</th><th>Dorsal</th><th>Nombre</th><th>Posición</th><th>Fecha de nacimiento</th><th>Altura (cm)</th><th>Peso (kg)</th><th></th></tr>`+
   cp().map(p=>`<tr><td style="padding:6px">${SEASON}</td>`+[['num','number'],['name','text'],['pos','text'],['dob','date'],['h','number'],['w','number']].map(([f,t])=>`<td><input data-p="${p.id}" data-f="${f}" type="${t}" value="${esc(p[f])}"></td>`).join('')+`<td><button class="btn d" data-act="delp" data-id="${p.id}">✕</button></td></tr>`).join('')+`</table></div>`;
@@ -420,6 +440,33 @@ window.openEditor=openEditor;window.hydrateVideos=hydrate;
 })();
 function vidHtml(e){if(!e.vid)return '<div class="bar" style="margin:0"><label class="btn s" style="cursor:pointer">Añadir vídeo<input type="file" accept="video/*" data-vin="'+e.id+'" hidden></label><button class="btn s" data-act="vurl" data-id="'+e.id+'">Pegar enlace</button></div>';
  return '<div>'+(e.vid.kind==='url'?'<a class="btn s" href="'+esc(e.vid.url)+'" target="_blank" rel="noopener">▶ Ver vídeo (enlace)</a>':'<video data-vid="'+e.id+'" controls playsinline preload="metadata" style="width:100%;border-radius:8px;background:#000"></video>')+'<div style="margin-top:6px"><button class="btn s" data-act="vdel" data-id="'+e.id+'">Quitar vídeo</button></div></div>'}
+
+// ===== CUADRO DE PARTIDOS (estilo calendario del Mundial) =====
+const CU_GC=['#1e6fd1','#d63031','#b8860b','#6c3fb5','#e0701a','#00897b','#c2185b','#558b2f','#3949ab','#00838f','#8d5a3b','#5d6d7e'];
+const CU_PLANE='<svg viewBox="0 0 24 24" width="13" height="13" aria-label="fuera"><path fill="currentColor" d="M22 15.5v-2L14 8.5V4a2 2 0 0 0-4 0v4.5l-8 5v2l8-2.2V18l-2.2 1.6V21L12 20l4.2 1v-1.4L14 18v-4.7z"/></svg>';
+function cuRender(a,back){
+ if(view!=='cu')return false;
+ const c=CO();
+ if(!c.matches.length||!c.teams.length){a.innerHTML=back+'<h2>Cuadro de partidos</h2><p>Primero carga los equipos y el calendario en "7 · Calendario".</p>';return true}
+ const dates=[...new Set(c.matches.map(m=>m.date||''))].sort((x,y)=>x===''?1:y===''?-1:x.localeCompare(y));
+ const rl=d=>{if(!d)return 'Sin fecha';const r=[...new Set(c.matches.filter(m=>(m.date||'')===d).map(m=>m.round))].sort((x,y)=>x-y);return r.length===1?'Jornada '+r[0]:'J'+r[0]+'-J'+r[r.length-1]};
+ const dl=d=>{if(!d)return 'Sin fecha';const s=new Date(d+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'}).replace(',','');return s.charAt(0).toUpperCase()+s.slice(1)};
+ const bands=[];dates.forEach(d=>{const l=rl(d),b=bands[bands.length-1];if(b&&b.l===l)b.n++;else bands.push({l,n:1})});
+ const bIdx=[];bands.forEach((b,i)=>{for(let k=0;k<b.n;k++)bIdx.push(i)});
+ const col=g=>c.type==='grupos'?(CU_GC[(g||0)-1]||'#5d6d7e'):'#2a7fa8';
+ const idx={};c.matches.forEach(m=>[m.home,m.away].forEach(id=>{const k=id+'|'+(m.date||'');(idx[k]=idx[k]||[]).push(m)}));
+ const tile=(m,t)=>{const hm=m.home===t.id,opp=tnm(hm?m.away:m.home),pl=m.gh!=null&&m.ga!=null;let cls='',rs='–';
+  if(pl){const gf=hm?m.gh:m.ga,gc=hm?m.ga:m.gh;rs=gf+'-'+gc;cls=gf>gc?' w':gf<gc?' l':' d'}
+  return '<div class="ct'+cls+'" style="background:'+col(t.group)+'" data-act="cumatch" data-r="'+m.round+'" title="'+esc(tnm(m.home)+(pl?' '+m.gh+'-'+m.ga+' ':' vs ')+tnm(m.away)+' · J'+m.round+(m.time?' · '+m.time:''))+'"><div class="t1"><span>'+esc(m.time||'')+'</span>'+(hm?'':CU_PLANE)+'</div><div class="op">'+esc(opp)+'</div><div class="rs">'+rs+'</div></div>'};
+ const gl=c.type==='grupos'?[...new Set(c.teams.map(t=>t.group))].sort((x,y)=>x-y):[0];
+ let rows='';
+ gl.forEach(g=>{const ts=c.teams.filter(t=>t.group===g).sort((x,y)=>x.name.localeCompare(y.name,'es'));
+  ts.forEach((t,i)=>{rows+='<tr>'+(i===0?'<th class="gb" rowspan="'+ts.length+'" style="background:'+col(g)+'"><div>'+(c.type==='grupos'?(g?'GRUPO '+g:'SIN GRUPO'):'LIGA')+'</div></th>':'')+'<th class="tn">'+esc(t.name)+'</th>'+
+   dates.map(d=>'<td class="cc">'+(idx[t.id+'|'+d]||[]).map(m=>tile(m,t)).join('')+'</td>').join('')+'</tr>'})});
+ a.innerHTML=back+'<h2>Cuadro de partidos '+SEASON+'</h2><div class="cu"><table><thead><tr><th class="cn" rowspan="2" colspan="2">EQUIPOS</th>'+bands.map((b,i)=>'<th class="bd b'+(i%2)+'" colspan="'+b.n+'">'+esc(b.l)+'</th>').join('')+'</tr><tr>'+dates.map((d,i)=>'<th class="dh b'+(bIdx[i]%2)+'"><div>'+esc(dl(d))+'</div></th>').join('')+'</tr></thead><tbody>'+rows+'</tbody></table></div>'+
+  '<p class="cul">'+CU_PLANE+' = juega fuera · sin icono = juega en casa · el resultado se muestra desde el equipo de la fila (primero sus goles): borde verde = victoria, amarillo = empate, rojo = derrota · – = no jugado. Toca un partido para ir a sus resultados.</p>';
+ return true}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-act="cumatch"]');if(!t)return;reR=+t.dataset.r;view='re';render()});
 
 async function exportBk(){
  const json=JSON.stringify(S),base='copia_entrenamientos_'+today();let err='';
